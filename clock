@@ -1,0 +1,85 @@
+import tkinter as tk
+import time
+
+class SwissWatch:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Montre Suisse IA")
+        self.root.geometry("300x300")
+        self.root.resizable(False, False)
+
+        self.canvas = tk.Canvas(root, width=300, height=300, bg="white")
+        self.canvas.pack()
+
+        self.draw_watch_face()
+        self.update_time()
+
+    def draw_watch_face(self):
+        # Cadran de la montre
+        self.canvas.create_oval(50, 50, 250, 250, outline="black", width=2, fill="lightgray")
+
+        # Marques des heures
+        for i in range(12):
+            angle = i * 30
+            x_outer = 150 + 90 * (1 - 0.1) * (angle / 360 * 2 * 3.14159)
+            y_outer = 150 + 90 * (1 - 0.1) * (angle / 360 * 2 * 3.14159)
+            x_inner = 150 + 100 * (1 - 0.1) * (angle / 360 * 2 * 3.14159)
+            y_inner = 150 + 100 * (1 - 0.1) * (angle / 360 * 2 * 3.14159)
+
+            # Calcul des coordonnées pour les marques des heures
+            rad = angle * 3.14159 / 180
+            x1 = 150 + 110 * (1 - 0.1) * (-(rad / (2 * 3.14159)) * 2 * 3.14159) # Correction de la formule
+            y1 = 150 + 110 * (1 - 0.1) * (-(rad / (2 * 3.14159)) * 2 * 3.14159) # Correction de la formule
+
+            x2 = 150 + 130 * (1 - 0.1) * (-(rad / (2 * 3.14159)) * 2 * 3.14159) # Correction de la formule
+            y2 = 150 + 130 * (1 - 0.1) * (-(rad / (2 * 3.14159)) * 2 * 3.14159) # Correction de la formule
+
+            # Ajustement des angles pour le cercle trigonométrique (0° en haut)
+            adjusted_angle = (90 - angle) * 3.14159 / 180
+            x1 = 150 + 110 * tk.cos(adjusted_angle)
+            y1 = 150 + 110 * tk.sin(adjusted_angle)
+            x2 = 150 + 130 * tk.cos(adjusted_angle)
+            y2 = 150 + 130 * tk.sin(adjusted_angle)
+
+            self.canvas.create_line(x1, y1, x2, y2, width=3, fill="black")
+
+        # Centre de la montre
+        self.canvas.create_oval(145, 145, 155, 155, fill="black")
+
+    def update_time(self):
+        current_time = time.localtime()
+        hours = current_time.tm_hour % 12
+        minutes = current_time.tm_min
+        seconds = current_time.tm_sec
+
+        # Effacer les aiguilles précédentes
+        self.canvas.delete("hands")
+
+        # Aiguille des heures
+        hour_angle = (hours + minutes / 60) * 30 - 90  # -90 pour que 12h soit en haut
+        hour_rad = hour_angle * 3.14159 / 180
+        x_hour = 150 + 60 * tk.cos(hour_rad)
+        y_hour = 150 + 60 * tk.sin(hour_rad)
+        self.canvas.create_line(150, 150, x_hour, y_hour, width=6, fill="black", tags="hands")
+
+        # Aiguille des minutes
+        minute_angle = minutes * 6 - 90
+        minute_rad = minute_angle * 3.14159 / 180
+        x_minute = 150 + 80 * tk.cos(minute_rad)
+        y_minute = 150 + 80 * tk.sin(minute_rad)
+        self.canvas.create_line(150, 150, x_minute, y_minute, width=4, fill="black", tags="hands")
+
+        # Aiguille des secondes
+        second_angle = seconds * 6 - 90
+        second_rad = second_angle * 3.14159 / 180
+        x_second = 150 + 90 * tk.cos(second_rad)
+        y_second = 150 + 90 * tk.sin(second_rad)
+        self.canvas.create_line(150, 150, x_second, y_second, width=2, fill="red", tags="hands")
+
+        # Planifier la prochaine mise à jour
+        self.root.after(1000, self.update_time)
+
+if __name__ == "__main__":
+    root = tk.Tk()
+    watch = SwissWatch(root)
+    root.mainloop()
