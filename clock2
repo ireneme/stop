@@ -1,0 +1,70 @@
+import tkinter as tk
+import time
+import threading
+
+class SwissWatch:
+    def __init__(self, master):
+        self.master = master
+        master.title("Montre Suisse")
+
+        self.canvas_width = 400
+        self.canvas_height = 400
+        self.canvas = tk.Canvas(master, width=self.canvas_width, height=self.canvas_height, bg="white")
+        self.canvas.pack()
+
+        self.draw_clock_face()
+        self.draw_hands()
+        self.update_time()
+
+    def draw_clock_face(self):
+        # Draw the outer circle
+        self.canvas.create_oval(50, 50, 350, 350, outline="black", width=5)
+
+        # Draw the numbers
+        for i in range(1, 13):
+            angle = i * 30 - 90  # Convert hour to angle (0 degrees is at the top)
+            x = 200 + 120 * math.cos(math.radians(angle))
+            y = 200 + 120 * math.sin(math.radians(angle))
+            self.canvas.create_text(x, y, text=str(i), font=("Arial", 16, "bold"))
+
+        # Draw the center point
+        self.canvas.create_oval(195, 195, 205, 205, fill="black")
+
+    def draw_hands(self):
+        # Hour hand
+        self.hour_hand = self.canvas.create_line(200, 200, 200 + 50 * math.cos(math.radians(-90)), 200 + 50 * math.sin(math.radians(-90)), width=8, fill="black")
+        # Minute hand
+        self.minute_hand = self.canvas.create_line(200, 200, 200 + 70 * math.cos(math.radians(-90)), 200 + 70 * math.sin(math.radians(-90)), width=6, fill="black")
+        # Second hand
+        self.second_hand = self.canvas.create_line(200, 200, 200 + 90 * math.cos(math.radians(-90)), 200 + 90 * math.sin(math.radians(-90)), width=2, fill="red")
+
+    def update_time(self):
+        current_time = time.localtime()
+        hour = current_time.tm_hour % 12
+        minute = current_time.tm_min
+        second = current_time.tm_sec
+
+        # Calculate angles for hands
+        # Hour hand angle: ((hour + minute/60) * 30) - 90 (subtract 90 to make 12 at the top)
+        hour_angle = (hour + minute / 60) * 30 - 90
+        # Minute hand angle: (minute * 6) - 90
+        minute_angle = minute * 6 - 90
+        # Second hand angle: (second * 6) - 90
+        second_angle = second * 6 - 90
+
+        # Move hands
+        self.canvas.coords(self.hour_hand, 200, 200, 200 + 50 * math.cos(math.radians(hour_angle)), 200 + 50 * math.sin(math.radians(hour_angle)))
+        self.canvas.coords(self.minute_hand, 200, 200, 200 + 70 * math.cos(math.radians(minute_angle)), 200 + 70 * math.sin(math.radians(minute_angle)))
+        self.canvas.coords(self.second_hand, 200, 200, 200 + 90 * math.cos(math.radians(second_angle)), 200 + 90 * math.sin(math.radians(second_angle)))
+
+        # Schedule the next update
+        self.master.after(1000, self.update_time)
+
+if __name__ == "__main__":
+    import math
+    root = tk.Tk()
+    my_watch = SwissWatch(root)
+    root.mainloop()
+    root = tk.Tk()
+    my_watch = SwissWatch(root)
+    root.mainloop()
