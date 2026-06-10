@@ -1,0 +1,128 @@
+HTML
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Montre Suisse Virtuelle</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            font-family: 'Arial', sans-serif;
+        }
+        .montre {
+            width: 250px;
+            height: 250px;
+            border: 15px solid #333;
+            border-radius: 50%;
+            background-color: #fff;
+            position: relative;
+            box-shadow: 0 0 20px rgba(0,0,0,0.3);
+        }
+        .cadran {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 15px;
+            height: 15px;
+            background-color: #333;
+            border-radius: 50%;
+            z-index: 10;
+        }
+        .aiguille {
+            position: absolute;
+            bottom: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background-color: #333;
+            border-radius: 2px;
+        }
+        .heure {
+            width: 6px;
+            height: 60px;
+            transform: translate(-50%, 0) rotate(0deg); /* Sera mis à jour par JS */
+            background-color: #d32f2f; /* Rouge pour les heures */
+            z-index: 5;
+        }
+        .minute {
+            width: 4px;
+            height: 80px;
+            transform: translate(-50%, 0) rotate(0deg); /* Sera mis à jour par JS */
+            background-color: #1976d2; /* Bleu pour les minutes */
+            z-index: 6;
+        }
+        .seconde {
+            width: 2px;
+            height: 100px;
+            transform: translate(-50%, 0) rotate(0deg); /* Sera mis à jour par JS */
+            background-color: #4caf50; /* Vert pour les secondes */
+            z-index: 7;
+        }
+        .chiffre {
+            position: absolute;
+            font-size: 18px;
+            color: #555;
+            transform-origin: center center;
+        }
+        .chiffre-12 { top: 15px; left: 50%; transform: translate(-50%, -50%) rotate(0deg); }
+        .chiffre-3 { top: 50%; right: 15px; transform: translate(50%, -50%) rotate(90deg); }
+        .chiffre-6 { bottom: 15px; left: 50%; transform: translate(-50%, 50%) rotate(180deg); }
+        .chiffre-9 { top: 50%; left: 15px; transform: translate(-50%, -50%) rotate(-90deg); }
+    </style>
+</head>
+<body>
+
+<div class="montre">
+    <div class="cadran"></div>
+    <div class="aiguille heure"></div>
+    <div class="aiguille minute"></div>
+    <div class="aiguille seconde"></div>
+    <div class="chiffre chiffre-12">12</div>
+    <div class="chiffre chiffre-3">3</div>
+    <div class="chiffre chiffre-6">6</div>
+    <div class="chiffre chiffre-9">9</div>
+</div>
+
+<script>
+    const aiguilleHeure = document.querySelector('.heure');
+    const aiguilleMinute = document.querySelector('.minute');
+    const aiguilleSeconde = document.querySelector('.seconde');
+
+    function mettreAJourMontre() {
+        const maintenant = new Date();
+        const heures = maintenant.getHours() % 12; // Pour un cadran 12 heures
+        const minutes = maintenant.getMinutes();
+        const secondes = maintenant.getSeconds();
+
+        // Calculer les rotations en degrés
+        // 360 degrés / 12 heures = 30 degrés par heure
+        // 360 degrés / 60 minutes = 6 degrés par minute
+        // 360 degrés / 60 secondes = 6 degrés par seconde
+
+        const rotationHeure = (heures + minutes / 60) * 30;
+        const rotationMinute = minutes * 6;
+        const rotationSeconde = secondes * 6;
+
+        aiguilleHeure.style.transform = `translate(-50%, 0) rotate(${rotationHeure}deg)`;
+        aiguilleMinute.style.transform = `translate(-50%, 0) rotate(${rotationMinute}deg)`;
+        aiguilleSeconde.style.transform = `translate(-50%, 0) rotate(${rotationSeconde}deg)`;
+    }
+
+    // Lancer la mise à jour toutes les secondes
+    setInterval(mettreAJourMontre, 1000);
+
+    // Mettre à jour la montre immédiatement au chargement
+    mettreAJourMontre();
+</script>
+
+</body>
+</html>
+
+</body>
+</html>
